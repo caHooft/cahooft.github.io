@@ -2,6 +2,7 @@
 ####################
 html/
 vendor/
+.vs/
 .sass-cache/
 .jekyll-metadata
 Gemfile.lock
