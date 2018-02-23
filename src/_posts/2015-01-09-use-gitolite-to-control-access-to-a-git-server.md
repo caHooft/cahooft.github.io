@@ -1,5 +1,5 @@
 ---
-layout      : default
+layout      : blog
 author      : groveld
 title       : Use Gitolite to Control Access to a Git Server
 description : How To Use Gitolite to Control Access to a Git Server on an Debian 7.0 VPS
