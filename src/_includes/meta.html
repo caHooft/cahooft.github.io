@@ -1,16 +1,12 @@
-<!-- meta info -->
+﻿<!-- meta info -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="format-detection" content="telephone=no">
 
 <!-- favicon and webapp behaviour -->
-<link rel="manifest" href="{{ "/manifest.json" | absolute_url }}">
-<meta name="msapplication-config" content="{{ "/msapplication.xml" | absolute_url }}">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Groveld">
 <link rel="shortcut icon" href="{{ "/favicon.ico" | absolute_url }}">
-<link rel="mask-icon" href="{{ "/assets/icons/safari-pinned-tab.svg" | absolute_url }}" color="#343a40">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ "/assets/icons/apple-touch-icon.png" | absolute_url }}">
 
 <!-- site info -->
 <meta name="description" content="{% if page.description %}{{ page.description | xml_escape }}{% else %}{{ site.description | xml_escape }}{% endif %}">
@@ -49,7 +45,6 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
 <link rel="stylesheet" href="{{ "/assets/css/main.css" | absolute_url }}">
-<link rel="stylesheet" href="{{ "/assets/css/syntax.css" | absolute_url }}">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
