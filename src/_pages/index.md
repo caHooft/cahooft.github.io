@@ -11,9 +11,9 @@ HELLO DOGGIE <3
 
 [![Epic Song](http://img.youtube.com/vi/ZS0WvzRVByg/0.jpg)](http://www.youtube.com/watch?v=ZS0WvzRVByg)
 
-[![unicorns](http://img.youtube.com/vi/xWhG4UU_Y/0.jpg)](https://www.youtube.com/watch?v=a-xWhG4UU_Y)
+[![unicorns](https://img.youtube.com/vi/xWhG4UU_Y/0.jpg)](https://www.youtube.com/watch?v=a-xWhG4UU_Y)
 
-<audio autoplay>
+<audio autoplay loop>
   <source src="/assets/audio/xfiles.ogg" type="audio/ogg">
   <source src="/assets/audio/xfiles.mp3" type="audio/mpeg">
   Your browser does not support the audio element.
