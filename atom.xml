@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title type="text" xml:lang="en">Casper Hooft</title>
+  <link rel="self" type="application/atom+xml" href="https://cahooft.github.io/atom.xml"/>
+  <link rel="alternate" href="https://cahooft.github.io/"/>
+  <updated>2018-02-23T21:22:06+00:00</updated>
+  <id>https://cahooft.github.io/</id>
+  <author>
+    <name></name>
+    <email></email>
+  </author>
+  <rights type="text">Copyright (c) 2018, Casper Hooft; all rights reserved.</rights>
+  
+  <entry>
+    <id>/articles/use-gitolite-to-control-access-to-a-git-server</id>
+    <link rel="alternate" type="text/html" href="https://cahooft.github.io/articles/use-gitolite-to-control-access-to-a-git-server/"/>
+    <title>Use Gitolite to Control Access to a Git Server</title>
+    <author>
+      <name>groveld</name>
+      <email></email>
+    </author>
+    <published>2015-01-09T00:00:00+00:00</published>
+    <content type="html">&lt;p&gt;Git is a great distributed version control system that can be used to keep track of changes and code for any kind of project. Sometimes, it is helpful to configure a git server to house your team’s projects.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Gitolite&lt;/strong&gt; provides an access-control layer for a git server, so that you can configure user-based git access without the accompanying operating system user accounts. This provides your git contributors the privileges they need, without exposing your server to other kinds of interaction.&lt;/p&gt;
+
+&lt;p&gt;We will be installing these components on an Debian 7.0 VPS. This tutorial assumes that you have a regular user account on this VPS with sudo privileges.&lt;/p&gt;
+
+&lt;h2 id=&quot;install-git&quot;&gt;Install Git&lt;/h2&gt;
+
+&lt;p&gt;Log into your Debian server with your regular user account.&lt;/p&gt;
+
+&lt;p&gt;We will be installing git from Debian’s default repositories:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;git-core
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We now have git installed. We will want to configure a few things for git to operate properly.&lt;/p&gt;
+
+&lt;h2 id=&quot;install-gitolite&quot;&gt;Install Gitolite&lt;/h2&gt;
+
+&lt;p&gt;Now that we have git set up correctly, we can install gitolite to manage user access to our repositories.&lt;/p&gt;
+
+&lt;p&gt;Gitolite is also available in Debian’s default repositories. Install it with this command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;gitolite
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Gitolite manages its configuration through git! To set this up properly, we’ll create a operating system user whose sole function is to interact with gitolite.&lt;/p&gt;
+
+&lt;p&gt;The operating system user will be called &lt;code class=&quot;highlighter-rouge&quot;&gt;git&lt;/code&gt; to make it easy for our collaborators to remember. We will not set a password so that it is only accessible through using the &lt;code class=&quot;highlighter-rouge&quot;&gt;su&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;adduser &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--group&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--shell&lt;/span&gt; /bin/bash &lt;span class=&quot;nt&quot;&gt;--disabled-password&lt;/span&gt; git
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We now have a user called “git” that will handle gitolite configuration. We need to be able to access this user from a normal account. We will do this by configuring an SSH key associated with git administration.&lt;/p&gt;
+
+&lt;h2 id=&quot;configure-ssh-keys-for-git-administration&quot;&gt;Configure SSH Keys for Git Administration&lt;/h2&gt;
+&lt;p&gt;On your &lt;strong&gt;local computer&lt;/strong&gt;, which you will be using to administer git and gitolite, you need to create an SSH key pair if you have not done so already.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/strong&gt; &lt;em&gt;If you already have a key pair created, you should skip this command to avoid overwriting your SSH keys.&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh-keygen &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; rsa
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Accept the default location and press &lt;code class=&quot;highlighter-rouge&quot;&gt;ENTER&lt;/code&gt; to configure key-based login without a password.&lt;/p&gt;
+
+&lt;p&gt;Copy the public key to the git server by typing:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;scp ~/.ssh/id_rsa.pub regular_username@git_server_IP_address:/tmp/git-admin.pub
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you followed the Initial Server Setup article, you will need to allow SSH access to the git user. You can do that by editing &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/ssh/sshd_config&lt;/code&gt; and adding git to the &lt;code class=&quot;highlighter-rouge&quot;&gt;AllowUsers&lt;/code&gt; directive. Once you’re done, restart the SSH server:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;service ssh restart
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;configure-gitolite&quot;&gt;Configure Gitolite&lt;/h2&gt;
+&lt;p&gt;The next steps will take place back on our git server. Log back in with your normal user.&lt;/p&gt;
+
+&lt;p&gt;We can log in with our “git” user to initialize gitolite with the public key we just transferred.&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;su - git
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, we can set up gitolite with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gl-setup /tmp/git-admin.pub
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Hit &lt;code class=&quot;highlighter-rouge&quot;&gt;ENTER&lt;/code&gt; to pull the configuration into your editor. Scan the contents to make sure the default configuration will meet your needs. You can always change it later.&lt;/p&gt;
+
+&lt;p&gt;When you are finished, save and exit out of the file.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-administer-gitolite&quot;&gt;How To Administer Gitolite&lt;/h2&gt;
+&lt;p&gt;Back on your &lt;strong&gt;local&lt;/strong&gt; computer, you can begin administering gitolite.&lt;/p&gt;
+
+&lt;p&gt;If you do not already have git installed on this computer, you need to install it with:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;git-core
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;First, we need to clone the gitolite information from our git server to our local machine:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone git@git_server_IP_address:gitolite-admin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This will create a new directory called &lt;code class=&quot;highlighter-rouge&quot;&gt;gitolite-admin&lt;/code&gt; within your current directory. Here, we can make changes to our access policies and then push those changes to the git server.&lt;/p&gt;
+
+&lt;h2 id=&quot;add-new-users-to-gitolite&quot;&gt;Add New Users to Gitolite&lt;/h2&gt;
+&lt;p&gt;To add users to your projects, you will need their public keys. Gitolite works by associating the username that will be signing in with the public key with the same name. We will pretend we have a user called &lt;code class=&quot;highlighter-rouge&quot;&gt;john&lt;/code&gt; for this demonstration.&lt;/p&gt;
+
+&lt;p&gt;On the local machine, we can change into the &lt;code class=&quot;highlighter-rouge&quot;&gt;gitolite-admin&lt;/code&gt; directory and see what is inside:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;gitolite-admin
+&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;conf    keydir
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Inside, there are two directories: &lt;code class=&quot;highlighter-rouge&quot;&gt;conf&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;keydir&lt;/code&gt;. Unsurprisingly, &lt;code class=&quot;highlighter-rouge&quot;&gt;keydir&lt;/code&gt; contains user keys.&lt;/p&gt;
+
+&lt;p&gt;You would communicate with “john” and acquire the public key that he plans on using. You would then copy that key into this directory like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; /path/to/johns/public/key.pub ~/gitolite-admin/keydir/john.pub
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;After that, you need to add the new public key to the git repository.&lt;/p&gt;
+
+&lt;p&gt;First, we want to configure the user name and email that will be associated with administrative git actions. Type these commands to configure this:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; user.name &lt;span class=&quot;s2&quot;&gt;&quot;your_name_here&quot;&lt;/span&gt;
+git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; user.email &lt;span class=&quot;s2&quot;&gt;&quot;your_email@address.com&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You probably also want to configure git to use the editor of your choice. Type this command to specify your preferences:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git config &lt;span class=&quot;nt&quot;&gt;--global&lt;/span&gt; core.editor your_editor_choice
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, we can add the new file to git:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git add keydir/john.pub
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Commit the changes with a message:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git commit &lt;span class=&quot;nt&quot;&gt;-a&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;New user John added&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Push the changes up to the git server to save the results:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git push
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;configure-access-with-gitolite&quot;&gt;Configure Access with Gitolite&lt;/h2&gt;
+&lt;p&gt;When you added the user in the last section, you may have noticed a warning like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;remote:
+remote:         &lt;span class=&quot;k&quot;&gt;*****&lt;/span&gt; WARNING &lt;span class=&quot;k&quot;&gt;*****&lt;/span&gt;
+remote:         the following &lt;span class=&quot;nb&quot;&gt;users&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;pubkey files &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;parens&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;not appear &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;the config file:
+remote: john&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;john.pub&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You will receive a message that the new user is not in the config file. This means that the user “john” is known to gitolite, but no access has been created for him.&lt;/p&gt;
+
+&lt;p&gt;We can easily add him to our configuration by editing the &lt;code class=&quot;highlighter-rouge&quot;&gt;~/gitolite-admin/conf/gitolite.conf&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;p&gt;We will go one step further though and give him his own repository. We will create a repository called &lt;code class=&quot;highlighter-rouge&quot;&gt;johns-project&lt;/code&gt; and give him access:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nano ~/gitolite-admin/conf/gitolite.conf
+repo    gitolite-admin
+RW+     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;   git-admin
+
+repo    testing
+RW+     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;   @all
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As you can see, the syntax is pretty simple.&lt;/p&gt;
+
+&lt;p&gt;We specify a git repository with the &lt;code class=&quot;highlighter-rouge&quot;&gt;repo&lt;/code&gt; keyword followed by its name. Under that, we write the privilege type, an equal sign (=), and the users who should get that access.&lt;/p&gt;
+
+&lt;p&gt;Groups can be defined with a line like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@group_name &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; user1 user2 user3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;After that, we can refer to a number of users like by referencing the group:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;repo    some_repo
+RW+     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; @group_name
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A special group called &lt;code class=&quot;highlighter-rouge&quot;&gt;@all&lt;/code&gt; references all users or all repositories, based on the context.&lt;/p&gt;
+
+&lt;p&gt;The permissions can be one of these values:&lt;/p&gt;
+
+&lt;p&gt;R: Read only access
+RW: Can read or push new changes. Cannot delete refs that exist on the git server already.
+RW+: Can push destructively, or delete refs on the server.
+-: Has no access to the specified content.&lt;/p&gt;
+
+&lt;p&gt;We can give “john” full access to a new repository called &lt;code class=&quot;highlighter-rouge&quot;&gt;johns-project&lt;/code&gt; by adding these lines to the end of the file:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;repo    johns-project
+RW+     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;       john
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Save and close the file.&lt;/p&gt;
+
+&lt;p&gt;Now, we can commit this change with a new message:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git commit &lt;span class=&quot;nt&quot;&gt;-a&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Made John's repo&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Finally, push the changes to the git server:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git push
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, “john” should be able to clone his project repository with the following command, from the computer where he created the public and private keys:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone git@git_server_IP_address:johns-project
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;You should now have gitolite configured correctly. You should be able to create git users easily without worrying about configuring accompanying operating system users and permissions every time.&lt;/p&gt;
+
+&lt;p&gt;If you are managing multiple projects with diverse teams, it is probably best to set up groups that correspond to projects. It might also be helpful to organize your &lt;code class=&quot;highlighter-rouge&quot;&gt;keydir&lt;/code&gt; keys into subdirectories based on project. Gitolite will use them the same way, but they will be easier to find for administrative purposes.&lt;/p&gt;
+</content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://cahooft.github.io/articles/use-gitolite-to-control-access-to-a-git-server/</loc>
+    <lastmod>2015-01-09T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+</urlset>
