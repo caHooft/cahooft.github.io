@@ -1,0 +1,30 @@
+source                : src
+destination           : html
+url                   : https://cahooft.github.io
+enforce_ssl           : cahooft.github.io
+permalink             : /articles/:title/
+include               : ["_pages"]
+
+compress_html:
+  clippings           : all
+  comments            : ["<!-- ", " -->"]
+  endings             : all
+  blanklines          : false
+
+title                 : Casper Hooft
+tagline               :
+description           :
+author                :
+email                 :
+phone                 :
+address               :
+copyright             :
+
+google_analytics      :
+googleplus            :
+twitter               :
+facebook              :
+linkedin              :
+github                :
+bitbucket             :
+keybase               :
