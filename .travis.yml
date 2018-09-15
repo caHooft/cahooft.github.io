@@ -1,5 +1,5 @@
 language: ruby
-rvm: 2.4
+rvm: 2.5
 sudo: false
 
 env:
@@ -10,14 +10,14 @@ branches:
   only:
     - build
 
-before_install:
-  - mv ./src/assets/css/main.css ./src/assets/css/$TRAVIS_COMMIT.css
-  - mv ./src/assets/js/main.js ./src/assets/js/$TRAVIS_COMMIT.js
-  - sed -i "s/main.css/$TRAVIS_COMMIT.css/" ./src/_includes/meta.html
-  - sed -i "s/main.js/$TRAVIS_COMMIT.js/" ./src/_includes/footer.html
+before_script:
+  # - mv ./src/assets/css/main.css ./src/assets/css/$TRAVIS_COMMIT.css
+  # - mv ./src/assets/js/main.js ./src/assets/js/$TRAVIS_COMMIT.js
+  # - sed -i "s/main.css/$TRAVIS_COMMIT.css/" ./src/_includes/meta.html
+  # - sed -i "s/main.js/$TRAVIS_COMMIT.js/" ./src/_includes/footer.html
 
 after_success:
-  - git config --global user.name "Travis CI"
+  - git config --global user.name "Automated Build"
   - git config --global user.email "c.a.hooft@gmail.com"
   - git clone --quiet --depth=50 --branch=master https://$GITHUB_API_KEY@github.com/cahooft/cahooft.github.io.git ../master > /dev/null 2>&1
   - rsync -vrth --delete --exclude '.git*' ./html/ ../master/

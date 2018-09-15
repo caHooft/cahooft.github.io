@@ -1,10 +1,9 @@
 # Project specific #
 ####################
-html/
-vendor/
-.vs/
-.sass-cache/
+html
 .jekyll-metadata
+.jekyll-cache
+.sass-cache
 Gemfile.lock
 
 # OS generated files #
