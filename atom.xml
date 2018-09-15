@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title type="text" xml:lang="">Casper Hooft</title>
+  <link rel="self" type="application/atom+xml" href="https://cahooft.github.io/atom.xml"/>
+  <link rel="alternate" href="https://cahooft.github.io/"/>
+  <updated>2018-09-15T22:09:19+00:00</updated>
+  <id>https://cahooft.github.io/</id>
+  <author>
+    <name></name>
+    <email></email>
+  </author>
+  <rights type="text">Copyright (c) 2018, Casper Hooft; all rights reserved.</rights>
+  
+</feed>
