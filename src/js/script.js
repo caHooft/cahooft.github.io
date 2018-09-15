@@ -12,9 +12,9 @@ const backgrounds = [
   "/images/bg02.jpg",
   "/images/bg03.jpg",
   "/images/bg04.jpg",
-  // "/images/bg05.jpg",
-  // "/images/bg06.jpg",
-  // "/images/bg07.jpg",
+  "/images/bg05.jpg",
+  "/images/bg06.jpg",
+  "/images/bg07.jpg",
   // "/images/bg08.jpg",
   // "/images/bg09.jpg"
 ]
