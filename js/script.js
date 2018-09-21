@@ -15,7 +15,7 @@ const backgrounds = [
   "/images/bg05.jpg",
   "/images/bg06.jpg",
   "/images/bg07.jpg",
-  // "/images/bg08.jpg",
+  "/images/bg08.jpg",
   // "/images/bg09.jpg"
 ]
 setInterval(function(){
