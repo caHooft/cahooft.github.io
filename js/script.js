@@ -17,8 +17,9 @@ const backgrounds = [
   "/images/bg07.jpg",
   "/images/bg08.jpg",
   // "/images/bg09.jpg"
+  //pictures
 ]
 setInterval(function(){
   var url=backgrounds[Math.floor(Math.random() * backgrounds.length)];
   document.body.style.backgroundImage = 'url('+url+')';
-},10000);
+},10000); //wait 10 seconds

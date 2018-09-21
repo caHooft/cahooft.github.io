@@ -1,6 +1,6 @@
 'use strict';
 
-const cacheVersion = '2018-09-21 20:06:36 +0000::';
+const cacheVersion = '2018-09-21 20:43:44 +0000::';
 const urlsToCache = [
   '/atom.xml','/browserconfig.xml','/','/manifest.json','/robots.txt','/sitemap.xml','/sw.js',
   
