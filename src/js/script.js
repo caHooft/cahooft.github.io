@@ -1,11 +1,11 @@
 // Register Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then(function(registration) {
-    // ServiceWorker registration successful
-  }).catch(function(err) {
-    console.log('ServiceWorker registration failed:', err);
-  });
-}
+// if ('serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/sw.js').then(function(registration) {
+//     // ServiceWorker registration successful
+//   }).catch(function(err) {
+//     console.log('ServiceWorker registration failed:', err);
+//   });
+// }
 
 const backgrounds = [
   "/images/bg01.jpg",
@@ -14,9 +14,9 @@ const backgrounds = [
   "/images/bg04.jpg",
   "/images/bg05.jpg",
   "/images/bg06.jpg",
-  "/images/bg07.jpg",
-  "/images/bg08.jpg",
-  "/images/bg09.jpg"
+  //"/images/bg07.jpg",
+  //"/images/bg08.jpg",
+  //"/images/bg09.jpg"
   //pictures
 ]
 setInterval(function(){
