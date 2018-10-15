@@ -7,6 +7,13 @@
 //   });
 // }
 
+var vhFix = new vhFix([
+  {
+    selector: '.fullscreen',
+    vh: 100
+  }
+]);
+
 const backgrounds = [
   "/images/bg01.jpg",
   "/images/bg02.jpg",
